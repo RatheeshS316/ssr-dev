@@ -13,9 +13,9 @@ const RECENT_PROJECTS = [
 ];
 
 const TEAM = [
-  { name: 'Ratheesh S',     role: 'Full Stack Developer', avatar: 'https://i.pravatar.cc/150?img=11' },
-  { name: 'Suyambu Raja A', role: 'Full Stack Developer', avatar: 'https://i.pravatar.cc/150?img=12' },
-  { name: 'Sanjay Ram A S', role: 'Backend Developer',    avatar: 'https://i.pravatar.cc/150?img=13' },
+  { name: 'Ratheesh S',     role: 'Full Stack Developer', avatar: '/images/ratheesh-s.jpg',      github: 'https://github.com/RatheeshS316',    linkedin: 'https://www.linkedin.com/in/ratheesh31/'      },
+  { name: 'Suyambu Raja A', role: 'Full Stack Developer', avatar: '/images/suyambu-raja-a.jpg',  github: 'https://github.com/suyambu-raja',    linkedin: 'https://linkedin.com/in/suyambu-raja'    },
+  { name: 'Sanjay Ram A S', role: 'Backend Developer',    avatar: '/images/sanjay-ram-as.jpg',   github: 'https://github.com/sanjay-ram-as',   linkedin: 'https://www.linkedin.com/in/sanjay-ram-a-s-b39b36293/'   },
 ];
 
 const REVIEWS = [

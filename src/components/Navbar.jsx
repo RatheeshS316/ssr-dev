@@ -83,7 +83,11 @@ const Navbar = ({ currentPage, handlePageChange }) => {
             >
               Admin Panel
             </button>
-            <button className="btn-ghost !py-2 !px-5 !rounded-full">
+            <button
+              onClick={() => navigate('login')}
+              aria-current={currentPage === 'login' ? 'page' : undefined}
+              className="btn-ghost !py-2 !px-5 !rounded-full"
+            >
               Login
             </button>
           </div>
@@ -124,7 +128,7 @@ const Navbar = ({ currentPage, handlePageChange }) => {
             );
           })}
           <div className="h-px bg-slate-800/60 my-1" />
-          <button className="btn-primary !rounded-full mx-1">Login as Admin</button>
+          <button onClick={() => navigate('login')} className="btn-primary !rounded-full mx-1">Login</button>
         </div>
       </div>
     </>

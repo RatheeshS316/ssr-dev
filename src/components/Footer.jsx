@@ -1,10 +1,10 @@
 import { Code2, Github, Linkedin, Instagram, Mail } from 'lucide-react';
 
 const SOCIAL = [
-  { Icon: Github,    href: '#', label: 'GitHub',    hoverClass: 'hover:text-white hover:border-white'           },
-  { Icon: Linkedin,  href: '#', label: 'LinkedIn',  hoverClass: 'hover:text-[#0077b5] hover:border-[#0077b5]' },
-  { Icon: Instagram, href: '#', label: 'Instagram', hoverClass: 'hover:text-pink-500 hover:border-pink-500'   },
-  { Icon: Mail,      href: '#', label: 'Email',     hoverClass: 'hover:text-brand hover:border-brand'         },
+  { Icon: Github,    href: 'https://github.com/ssrdev',              label: 'GitHub',    hoverClass: 'hover:text-white hover:border-white'           },
+  { Icon: Linkedin,  href: 'https://linkedin.com/in/ssrdev',         label: 'LinkedIn',  hoverClass: 'hover:text-[#0077b5] hover:border-[#0077b5]' },
+  { Icon: Instagram, href: 'https://instagram.com/ssrdev',           label: 'Instagram', hoverClass: 'hover:text-pink-500 hover:border-pink-500'   },
+  { Icon: Mail,      href: 'mailto:ssrdev@example.com',              label: 'Email',     hoverClass: 'hover:text-brand hover:border-brand'         },
 ];
 
 const NAV = [
@@ -79,6 +79,8 @@ const Footer = ({ handlePageChange }) => (
               key={label}
               href={href}
               aria-label={label}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`flex items-center justify-center w-9 h-9 rounded-lg
                 bg-surface2 border border-slate-800 text-slate-500
                 transition-all duration-200 hover:-translate-y-0.5 ${hoverClass}`}

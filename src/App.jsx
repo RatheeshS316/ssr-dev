@@ -10,6 +10,7 @@ import HistoryPage   from './pages/HistoryPage';
 import ReviewPage    from './pages/ReviewPage';
 import TeamPage      from './pages/TeamPage';
 import AdminPage     from './pages/AdminPage';
+import LoginPage     from './pages/LoginPage';
 
 const PAGES = {
   home:      HomePage,
@@ -18,6 +19,7 @@ const PAGES = {
   review:    ReviewPage,
   team:      TeamPage,
   admin:     AdminPage,
+  login:     LoginPage,
 };
 
 const App = () => {

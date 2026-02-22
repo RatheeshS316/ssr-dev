@@ -34,11 +34,13 @@ const TeamCard = ({ member, size = 'sm' }) => {
         {[
           { href: linkedin, Icon: Linkedin, label: `${name} LinkedIn` },
           { href: github,   Icon: Github,   label: `${name} GitHub`   },
-        ].map(({ href, Icon, label }) => (
+        ].filter(({ href }) => href && href !== '#').map(({ href, Icon, label }) => (
           <a
             key={label}
             href={href}
             aria-label={label}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center w-9 h-9 rounded-xl
               bg-surface3 border border-slate-700 text-slate-500
               transition-all duration-200 hover:text-white hover:border-slate-500 hover:scale-110"
