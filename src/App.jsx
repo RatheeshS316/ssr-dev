@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+import { useAuth } from './hooks/useAuth.js';
 
 import HomePage      from './pages/HomePage';
 import PortfolioPage from './pages/PortfolioPage';
@@ -22,9 +24,16 @@ const PAGES = {
   login:     LoginPage,
 };
 
+// Pages that require member authentication
+const MEMBER_PAGES = [];
+
+// Pages that require admin role
+const ADMIN_PAGES = ['admin'];
+
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoading, setIsLoading] = useState(true);
+  const { isLoading: authLoading } = useAuth();
 
   /* Initial splash */
   useEffect(() => {
@@ -44,9 +53,13 @@ const App = () => {
     }, 900);
   };
 
-  if (isLoading) return <LoadingScreen />;
+  if (isLoading || authLoading) return <LoadingScreen />;
 
   const PageComponent = PAGES[currentPage] || HomePage;
+
+  // Check if page requires protection
+  const isAdminPage = ADMIN_PAGES.includes(currentPage);
+  const isMemberPage = MEMBER_PAGES.includes(currentPage);
 
   return (
     <div className="min-h-screen bg-bg text-slate-200 overflow-x-hidden relative">
@@ -68,7 +81,21 @@ const App = () => {
 
       {/* Page content */}
       <main id="main-content" role="main" className="relative z-10 min-h-[70vh]">
-        <PageComponent handlePageChange={handlePageChange} />
+        {isAdminPage ? (
+          <ProtectedRoute 
+            Component={PageComponent} 
+            requiredRoles={['admin']} 
+            handlePageChange={handlePageChange}
+          />
+        ) : isMemberPage ? (
+          <ProtectedRoute 
+            Component={PageComponent} 
+            requiredRoles={['member', 'admin']} 
+            handlePageChange={handlePageChange}
+          />
+        ) : (
+          <PageComponent handlePageChange={handlePageChange} />
+        )}
       </main>
 
       {/* Footer */}

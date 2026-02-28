@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Lock, Mail, Eye, EyeOff, LogIn, Code2 } from 'lucide-react';
 import FadeInSection from '../components/FadeInSection';
+import { useAuth } from '../hooks/useAuth.js';
 
 const LoginPage = ({ handlePageChange }) => {
   const [email, setEmail]       = useState('');
@@ -8,8 +9,18 @@ const LoginPage = ({ handlePageChange }) => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
+  const { login, isAuthenticated, user } = useAuth();
 
-  const handleSubmit = (e) => {
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Redirect to home or admin dashboard based on role
+      const destination = user.role === 'admin' ? 'admin' : 'home';
+      handlePageChange(destination);
+    }
+  }, [isAuthenticated, user, handlePageChange]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -18,9 +29,22 @@ const LoginPage = ({ handlePageChange }) => {
       return;
     }
 
-    // Simulated sign-in loading effect
     setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
+    try {
+      const result = await login(email, password);
+      if (result.success) {
+        // Redirect based on role
+        const destination = result.user.role === 'admin' ? 'admin' : 'home';
+        setTimeout(() => handlePageChange(destination), 500);
+      } else {
+        setError(result.error || 'Login failed');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

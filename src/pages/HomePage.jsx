@@ -1,27 +1,16 @@
 import { useState, useEffect } from 'react';
-import { FileText, Users, TrendingUp, Code2, Cpu } from 'lucide-react';
+import { FileText, Users, TrendingUp, Code2, Cpu, AlertCircle } from 'lucide-react';
 import FadeInSection from '../components/FadeInSection';
 import StatCard from '../components/StatCard';
 import ProjectCard from '../components/ProjectCard';
 import TeamCard from '../components/TeamCard';
 import ReviewCard from '../components/ReviewCard';
-
-const RECENT_PROJECTS = [
-  { id: 1, title: 'E-Commerce Platform',       client: 'ABC Store',        img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600', tech: ['React', 'Node', 'MongoDB'] },
-  { id: 2, title: 'AI Chatbot',                client: 'Internal Product', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600', tech: ['Python', 'FastAPI', 'OpenAI'] },
-  { id: 3, title: 'College Management System', client: 'XYZ College',      img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600', tech: ['MERN Stack'] },
-];
+import api from '../services/api';
 
 const TEAM = [
   { name: 'Ratheesh S',     role: 'Full Stack Developer', avatar: '/images/ratheesh-s.jpg',      github: 'https://github.com/RatheeshS316',    linkedin: 'https://www.linkedin.com/in/ratheesh31/'      },
   { name: 'Suyambu Raja A', role: 'Full Stack Developer', avatar: '/images/suyambu-raja-a.jpg',  github: 'https://github.com/suyambu-raja',    linkedin: 'https://linkedin.com/in/suyambu-raja'    },
   { name: 'Sanjay Ram A S', role: 'Backend Developer',    avatar: '/images/sanjay-ram-as.jpg',   github: 'https://github.com/sanjay-ram-as',   linkedin: 'https://www.linkedin.com/in/sanjay-ram-a-s-b39b36293/'   },
-];
-
-const REVIEWS = [
-  { name: 'John Doe',    role: 'CEO, ABC Corp',       rating: 5, quote: 'Professional team delivered our project on time and beyond expectations!' },
-  { name: 'Sarah Smith', role: 'Product Manager',     rating: 5, quote: 'Excellent code quality, great communication, and top-notch support throughout.' },
-  { name: 'Michael Lee', role: 'Startup Founder',     rating: 5, quote: 'Modern, clean design and rock-solid implementation. Highly recommended!' },
 ];
 
 const SectionHeader = ({ title, barClass }) => (
@@ -129,7 +118,52 @@ function TerminalWidget() {
 }
 
 /* ── Home page ────────────────────────────────────────── */
-const HomePage = ({ handlePageChange }) => (
+const HomePage = ({ handlePageChange }) => {
+  const [recentProjects, setRecentProjects] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setError(null);
+        // Fetch recent projects
+        const projectsRes = await api.get('/api/projects/recent');
+        if (projectsRes.data.success) {
+          setRecentProjects(projectsRes.data.data || []);
+        }
+
+        // Fetch approved reviews
+        const reviewsRes = await api.get('/api/reviews');
+        if (reviewsRes.data.success) {
+          setReviews(reviewsRes.data.data || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Fallback data if API returns empty
+  const displayProjects = recentProjects.length > 0 ? recentProjects : [
+    { id: 1, title: 'E-Commerce Platform',       clientName: 'ABC Store',        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600', category: 'Web Development' },
+    { id: 2, title: 'AI Chatbot',                clientName: 'Internal Product', image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600', category: 'AI/ML' },
+    { id: 3, title: 'College Management System', clientName: 'XYZ College',      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600', category: 'Enterprise' },
+  ];
+
+  const displayReviews = reviews.length > 0 ? reviews : [
+    { id: 1, userName: 'John Doe',    rating: 5, message: 'Professional team delivered our project on time and beyond expectations!' },
+    { id: 2, userName: 'Sarah Smith', rating: 5, message: 'Excellent code quality, great communication, and top-notch support throughout.' },
+    { id: 3, userName: 'Michael Lee', rating: 5, message: 'Modern, clean design and rock-solid implementation. Highly recommended!' },
+  ];
+
+  return (
   <div className="page-container pt-10 pb-20 space-y-20">
 
     {/* ══ HERO ════════════════════════════════════════════ */}
@@ -226,13 +260,22 @@ const HomePage = ({ handlePageChange }) => (
     {/* ══ RECENT PROJECTS ═════════════════════════════════ */}
     <section>
       <SectionHeader title="Recent Projects" barClass="bg-gradient-to-r from-brand to-blue-400" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {RECENT_PROJECTS.map((project, i) => (
-          <FadeInSection key={project.id} delay={i * 100}>
-            <ProjectCard project={project} />
-          </FadeInSection>
-        ))}
-      </div>
+      {loading && <div className="text-center text-slate-400">Loading projects...</div>}
+      {error && (
+        <div className="flex items-center gap-3 p-4 bg-red-900/20 border border-red-700/50 rounded-lg text-red-300">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <p>Failed to load projects: {error}</p>
+        </div>
+      )}
+      {!loading && !error && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayProjects.map((project, i) => (
+            <FadeInSection key={project.id} delay={i * 100}>
+              <ProjectCard project={project} />
+            </FadeInSection>
+          ))}
+        </div>
+      )}
     </section>
 
     {/* ══ OUR TEAM ════════════════════════════════════════ */}
@@ -250,16 +293,26 @@ const HomePage = ({ handlePageChange }) => (
     {/* ══ REVIEWS ═════════════════════════════════════════ */}
     <section>
       <SectionHeader title="Customer Reviews" barClass="bg-gradient-to-r from-yellow-500 to-yellow-400" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {REVIEWS.map((review, i) => (
-          <FadeInSection key={review.name} delay={i * 100}>
-            <ReviewCard review={review} />
-          </FadeInSection>
-        ))}
-      </div>
+      {loading && <div className="text-center text-slate-400">Loading reviews...</div>}
+      {error && (
+        <div className="flex items-center gap-3 p-4 bg-red-900/20 border border-red-700/50 rounded-lg text-red-300">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <p>Failed to load reviews: {error}</p>
+        </div>
+      )}
+      {!loading && !error && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayReviews.map((review, i) => (
+            <FadeInSection key={review.id} delay={i * 100}>
+              <ReviewCard review={review} />
+            </FadeInSection>
+          ))}
+        </div>
+      )}
     </section>
 
   </div>
 );
+};
 
 export default HomePage;
